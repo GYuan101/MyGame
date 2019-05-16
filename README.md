@@ -24,7 +24,7 @@ rpgobj Charmander素材截取完成，可升级两次的三个形态，后两种
 只不过需要建立string和enum之间的同名转换，由于不存在直接的转换函数如tostring（java），过于繁琐；<br> 
 解决了无效外部链接的问题，抽象类不能实例化，基类虚函数不能无实现；<br> 
 
-! [5.16效果图] ( https://github.com/GYuan101/MyGame/5.16show.png)
+! [5.16效果图] (https://github.com/GYuan101/MyGame/blob/master/5.16show.png)
 
 ### 问题：
 QMediaplayer找不到文件，include后全篇飙红<br> 
