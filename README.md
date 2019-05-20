@@ -20,24 +20,32 @@ rpgobj Charmander素材截取完成，可升级两次的三个形态，后两种
 建立rpgobj的派生类Guard，作为玩家可操作的tower，可以根据wasd进行移动和交战<br> 
 将rpgobj中的OnErase和Move定义为虚函数，由派生类实现<br> 
 将rpgobj的取值定义为两层枚举变量，objtype和objstate（由于攻击动作较多取值较多）<br> 
-更改initobj的参数，考虑objtype、objstate、string，string为了FindICON而添加，另一种思路是对FindICON进行重载以便根据enum类型搜索，<br> 
+更改initobj的参数，考虑objtype、objstate、string，string为了FindICON而添加，
+另一种思路是对FindICON进行重载以便根据enum类型搜索，<br> 
 只不过需要建立string和enum之间的同名转换，由于不存在直接的转换函数如tostring（java），过于繁琐；<br> 
 解决了无效外部链接的问题，抽象类不能实例化，基类虚函数不能无实现；<br> 
 
 ! [5.16效果图] (https://github.com/GYuan101/MyGame/blob/master/5.16show.png)
 
+5.20
+---
+素材图片的背景透明化<br> 
+地图网格化，确定防御塔位置，选定了几个可能的防御塔所在的坐标，根据0.5维步长可以找到地图上道路的坐标轨迹，
+存在static const QList<QList<double>>中<br> 
+三个出怪口随机按时间出怪，建立第二个槽函数每2s更新一次，增加一个怪兽，最多一百只，怪兽出生点和出生形态随机产生<br> 
+完成怪兽在道路上行走，并且在道路进到转向，重新建立obj（更换怪兽方向）<br> 
+用static vector<Monster>存在所有怪兽的坐标和信息<br> 
+出现问题initmonster好好的，但是出了这个函数在另一个文件保存的monster信息的一个枚举变量出现乱码，不知道出现什么问题
+  解决方法，用两层友元函数，由monster到rpgobj再到icon，在init之后对icon.objstate重新赋值，可间接解决问题<br> 
+
 ### 问题：
 QMediaplayer找不到文件，include后全篇飙红<br> 
 
 ### 下面解决：
-素材图片的背景透明化<br> 
 每种攻击状态的连续播放（Qtimer，repaint）<br> 
-地图网格化，确定防御塔位置<br> 
-三个出怪口随机按时间出怪<br> 
 完成rpgobj派生类tower<br> 
 提取2-3种防御塔图片素材，2-3种怪兽素材<br> 
 怪兽血条建立<br> 
 防御塔根据怪兽位置进行转向<br> 
 攻击特效素材提取<br> 
-金币、升级系统<br> 
-音乐tm的怎么办<br> 
+金币、升级系统<br>  
