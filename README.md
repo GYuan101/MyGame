@@ -38,7 +38,7 @@ rpgobj Charmander素材截取完成，可升级两次的三个形态，后两种
 出现问题initmonster好好的，但是出了这个函数在另一个文件保存的monster信息的一个枚举变量出现乱码，不知道出现什么问题
   解决方法，用两层友元函数，由monster到rpgobj再到icon，在init之后对icon.objstate重新赋值，可间接解决问题<br> 
 
-5.22
+5.21
 ---
 完成rpgobj派生类tower<br> 
 实现了tower类，每个对象有一个mymonster的vector还是list，存放在这个tower攻击范围之内的怪兽指针，所有怪兽在world对象的静态vetor里存储<br>
@@ -49,6 +49,18 @@ rpgobj Charmander素材截取完成，可升级两次的三个形态，后两种
 每次move发生，上一次存储的freemonster中的指针出错，有时候怪兽整个飞了，有时候怪兽的私有成员距离（判断是否可攻击、是否需要更新freemonster和mymonster的关键依据），尚未发现问题！一步一步调试，真的就是出了{}就错了，TMD，和上面出现的问题一个性质，当时我把丢了的值重新赋值，但是这次无法找到原址，我想换成引用的QList貌似也不可以，失败失败<br>
 防御塔根据怪兽位置进行转向，通过redirect实现，根据怪兽和塔的相对位置，分为八个方向，对应八种怪兽形态<br>
 在选定的17个塔基处随机生成（计时）防御塔<br>
+
+5.22
+---
+上面问题的解决过程：用stepin的方法一步一步debug，发现在执行a.exec(),也就是执行信号槽等循环的时候，退出函数QByteArray::operator!= 时发生的值更改，然后找到了在vector freemonster的pushback操作时，值发生了变化，怀疑pushiback会改变已有数据的地址？？？<br>
+https://blog.csdn.net/hl_zzl/article/details/84944494 追本溯源，发现vector每次pushback如果容量不足，都会重新分配内存，因此指向改变地址之前的指针，在pushback动态分配之后就飞了，现在用reverse设定maxmonster的最大怪兽量，就可以每次不动态分配，问题解决<br>
+怕有相同的问题发生，mymonster是QList<Monster*>，每次可能会出线将freemonster中的指针pushback到mymonster中，通过迭代器将这个指针从fremonster中erase，erase的指针不会释放指向的内存，不用担心，不过迭代器在erase之后会跳到下一个元素，注意，在for循环中使用要先--！<br>
+
+新的问题，QList<*>迭代器取出来指针是野指针，但是调试时候看那个QList明明元素没有问题。<br>
+问题解决，还是上面说的erase的问题。<br>
+
+又来了新的问题，每次更新mymonster只会从freemonster里面更新，所以怪物就不会同时进入两个塔的攻击范围！（至少现在不会崩溃了）<br>
+问题解决，放弃了使用freemonster这个list，进而每次怪兽移动对全部怪兽和塔进行遍历，竟然不卡顿，解决了一只怪无法被多个塔攻击的问题<br>
 
 ### 问题：
 QMediaplayer找不到文件，include后全篇飙红<br> 
